@@ -8,19 +8,24 @@ const db = spicedPg(
 module.exports.getAllSignatures = () => {db
     .query(`SELECT * FROM signatures;`)
     .then((data) => {
-        console.log(data.rows); // in rows property is the actual data
+        // console.log(data.rows); // in rows property is the actual data
+        return data;
     })
     .catch((err) => {
-        console.log("error appeared for query: ", err);
+        console.log("getAllSignatures: error appeared for query: ", err);
     });}
 
-module.exports.addSignature = () => {
-    db.query(`SELECT * FROM signatures;`)
+module.exports.addSignature = (fName, lName, userSignature) => {
+    // console.log("First name: ", fName, "Last name: ", lName, "Signature: ", signature);
+
+    db.query(
+        `INSERT INTO signatures (firstname, lastname, signature) VALUES ($1, $2, $3)`, [fName, lName, userSignature]
+    )
         .then((data) => {
             console.log(data.rows); // in rows property is the actual data
         })
         .catch((err) => {
-            console.log("error appeared for query: ", err);
+            console.log("addSignature: error appeared for query: ", err);
         });
 };
 

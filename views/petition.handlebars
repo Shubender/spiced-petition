@@ -1,3 +1,20 @@
-<h1>This petition about pain</h1>
-<p>Here some text about this petition</p>
-<img src="/pain.jpg" alt="pain">
+<div class="petition">
+    <p class="title-petition">No smoking in public places</p>
+    <img src="/no-smoking-sign.png" alt="pain" />
+    <p class="text-petition">There is no risk-free level of secondhand smoke,
+        and even brief exposure can cause immediate harm. Studies have shown
+        that smokefree laws that prohibit smoking in public places like bars and
+        restaurants help improve the health of workers and the general
+        population.
+    </p>
+</div>
+
+<form action="/petition" method="POST">
+    <div class="input-credo">
+        <input class="input-fname" type="text" name="fname" placeholder="First name">
+        <input class="input-lname" type="text" name="lname" placeholder="Last name"><br>
+    </div>
+    <input style="display: none;" name="signature">
+    <canvas id="signatureCanvas" width="280px" height="70px"></canvas><br>
+     <input type="submit" value="Submit">
+</form> 
