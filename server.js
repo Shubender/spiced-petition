@@ -23,7 +23,6 @@ app.get("/", (req, res) => {
 
 //  - one route for renderering the petition page with handlebars (EASY)
 app.get("/petition", (req, res) => {
-    // const dataSign =  getAllSignatures();
     res.render("petition", {
         layout: "main",
     });
@@ -44,11 +43,17 @@ app.get("/signers", (req, res) => {
         layout: "main",
     });
 });
-
+let signersCount;
 //  - one route for rendering the thanks page with handlebars (EASY); make sure to get information about the number of signers (MEDIUM)
 app.get("/thanks", (req, res) => {
+    getAllSignatures()
+        .then((data) => {
+             signersCount = data.rows.length;
+        })
+        .catch((err) => console.log(err));
     res.render("thanks", {
         layout: "main",
+        signersCount,
     });
 });
 
