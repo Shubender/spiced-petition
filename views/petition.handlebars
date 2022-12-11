@@ -7,12 +7,14 @@
         restaurants help improve the health of workers and the general
         population.
     </p>
+    {{#if showWarning}}
+    <p class="text-petition warning">Please fill in all details</p>
+    {{/if}}
 </div>
-
 <form action="/petition" method="POST">
     <div class="input-credo">
-        <input class="input-fname" type="text" name="fname" placeholder="First name">
-        <input class="input-lname" type="text" name="lname" placeholder="Last name"><br>
+        <input class="input-fname" type="text" name="fname" placeholder="First name" >
+        <input class="input-lname" type="text" name="lname" placeholder="Last name" ><br>
     </div>
     <input style="display: none;" name="signature">
     <canvas id="signatureCanvas" width="280px" height="70px"></canvas><br>
