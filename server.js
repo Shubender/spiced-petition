@@ -37,23 +37,35 @@ app.post("/petition", (req, res) => {
     res.redirect("/thanks/");
 });
 
-//  - one route for rendering the signers page with handlebars (EASY); make sure to get all the signature data from the db before (MEDIUM)
-app.get("/signers", (req, res) => {
-    res.render("signers", {
-        layout: "main",
-    });
-});
 let signersCount;
+let allData;
+let fNameThanks;
 //  - one route for rendering the thanks page with handlebars (EASY); make sure to get information about the number of signers (MEDIUM)
 app.get("/thanks", (req, res) => {
     getAllSignatures()
         .then((data) => {
-             signersCount = data.rows.length;
+            allData = data.rows;
+            // console.log("allData: ", allData);
+            signersCount = allData.length;
+            // console.log("signersCount: ", signersCount);
+            fNameThanks = allData[allData.length - 1].firstname;
+            // console.log("fNameThanks: ", fNameThanks);
+            res.render("thanks", {
+                layout: "main",
+                signersCount,
+                allData,
+                fNameThanks,
+            });
         })
         .catch((err) => console.log(err));
-    res.render("thanks", {
+});
+
+//  - one route for rendering the signers page with handlebars (EASY); make sure to get all the signature data from the db before (MEDIUM)
+app.get("/signers", (req, res) => {
+    res.render("signers", {
         layout: "main",
         signersCount,
+        allData,
     });
 });
 

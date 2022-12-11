@@ -1,4 +1,11 @@
-<h1>List of signers:</h1>
-<ul>
-    <li></li>
-</ul>
+<div class="signers">
+    <h1>List of signers:</h1>
+    <ul>
+        {{#each allData}}
+            <li>
+                {{firstname}}
+                {{lastname}}
+            </li>
+        {{/each}}
+    </ul>
+</div>

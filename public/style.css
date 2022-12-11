@@ -7,6 +7,30 @@ img {
     width: 200px;
 }
 
+.thanks {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-family: "Martian Mono", monospace;
+}
+
+.thanks-text {
+    width: 600px;
+    text-align: center;
+}
+
+.signers {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-family: "Martian Mono", monospace;
+}
+
+.signers-text {
+    width: 600px;
+    text-align: center;
+}
+
 .petition {
     display: flex;
     align-items: center;
@@ -48,6 +72,7 @@ form {
     /* margin: 10px; */
 }
 
-.input-fname, .input-lname {
+.input-fname,
+.input-lname {
     margin: 10px;
 }
