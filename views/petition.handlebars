@@ -16,7 +16,9 @@
         <input class="input-fname" type="text" name="fname" placeholder="First name" >
         <input class="input-lname" type="text" name="lname" placeholder="Last name" ><br>
     </div>
-    <input style="display: none;" name="signature">
+    <p class="text-petition">Sign here:</p>
+    <input id="sigHidden" style="display: none;" name="signature" value="">
     <canvas id="signatureCanvas" width="280px" height="70px"></canvas><br>
-     <input type="submit" value="Submit">
-</form> 
+     <input id="submitBtn" type="submit" value="Submit">
+</form>
+<script src="/canvas.js"></script>

@@ -48,10 +48,10 @@ img {
 .text-petition {
     font-family: "Martian Mono", monospace;
     width: 600px;
-    font-size: 20px;
+    font-size: 16px;
     text-align: center;
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .warning {

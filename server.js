@@ -3,6 +3,12 @@ const express = require("express");
 const app = express();
 const { getAllSignatures, addSignature } = require("./db.js");
 let showWarning = false;
+let signersCount;
+let allData;
+let fNameThanks;
+let cookieID = 0;
+
+// const req = require("express/lib/request.js");
 
 // setup handlebars for your express app correctly (EASY)
 const { engine } = require("express-handlebars");
@@ -16,22 +22,34 @@ app.use(express.static("./public"));
 app.use(express.static("./public/images"));
 app.use(express.urlencoded());
 
-const cookieParser = require("cookie-parser");
-const req = require("express/lib/request.js");
-app.use(cookieParser());
-app.use((req, res, next) => {
-    if (req.url.startsWith("/petition") && req.cookies.dataOk === "yes") {
-        res.redirect("/thanks");
-    } else {
-        next();
-    }
-});
+const cookieSession = require("cookie-session");
+
+app.use(
+    cookieSession({
+        secret: process.env.SESSION_SECRET,
+        maxAge: 1000 * 60 * 60 * 24 * 14,
+    })
+);
+//process.env.SESSION_SECRET,
+// app.use((req, res, next) => {
+//     if (req.url.startsWith("/petition") && req.session.signed === cookieID) {
+//         res.redirect("/thanks");
+//     } else {
+//         next();
+//     }
+// });
 
 // Create multiple routes for your express app:
 app.get("/", (req, res) => {
     showWarning = false;
     res.redirect("/petition/");
 });
+
+// app.get("/thanks", (req, res) => {
+//     if (req.session.signed === 0) {
+//         res.redirect("/petition/");
+//     } 
+// });
 
 //  - one route for renderering the petition page with handlebars (EASY)
 app.get("/petition", (req, res) => {
@@ -53,16 +71,13 @@ app.post("/petition", (req, res) => {
 
     if (fName !== "" && lName !== "") {
         showWarning = false;
-        res.cookie("dataOk", "yes");
         addSignature(fName, lName, userSignature);
         res.redirect("/thanks/");
     }
     // console.log("First name: ", fName, "Last name: ", lName);
 });
 
-let signersCount;
-let allData;
-let fNameThanks;
+
 //  - one route for rendering the thanks page with handlebars (EASY); make sure to get information about the number of signers (MEDIUM)
 app.get("/thanks", (req, res) => {
     getAllSignatures()
@@ -72,7 +87,9 @@ app.get("/thanks", (req, res) => {
             signersCount = allData.length;
             // console.log("signersCount: ", signersCount);
             fNameThanks = allData[allData.length - 1].firstname;
-            // console.log("fNameThanks: ", fNameThanks);
+            cookieID = allData[allData.length - 1].id;
+            req.session.signed = cookieID;
+            // console.log("cookieID: ", cookieID);
             res.render("thanks", {
                 layout: "main",
                 signersCount,
