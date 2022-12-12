@@ -31,10 +31,11 @@ module.exports.getAllSignatures = () => {
 //         return data;
 // };
 
-module.exports.addSignature = (fName, lName, userSignature) => {
+module.exports.addSignature = (fName, lName, canvasPic) => {
     return db.query(
         `INSERT INTO signatures (firstname, lastname, signature) VALUES ($1, $2, $3) RETURNING *;`,
-        [fName, lName, userSignature]);
+        [fName, lName, canvasPic]
+    );
 };
 
 // create the following functions:

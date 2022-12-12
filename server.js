@@ -5,8 +5,10 @@ const { getAllSignatures, addSignature } = require("./db.js");
 let showWarning = false;
 let signersCount;
 let allData;
+let userData;
+let finalImg;
 let fNameThanks;
-let cookieID = 0;
+// let cookieID = 0;
 
 // const req = require("express/lib/request.js");
 
@@ -30,20 +32,23 @@ app.use(
         maxAge: 1000 * 60 * 60 * 24 * 14,
     })
 );
-//process.env.SESSION_SECRET,
-// app.use((req, res, next) => {
-//     if (req.url.startsWith("/petition") && req.session.signed === cookieID) {
-//         res.redirect("/thanks");
-//     } else {
-//         next();
-//     }
-// });
+
+app.use((req, res, next) => {
+    if (req.url.startsWith("/petition") && req.session.signed) {
+        res.redirect("/thanks");
+    } else if (req.url.startsWith("/thanks") && !req.session.signed) {
+        res.redirect("/petition/");
+    } else {
+        next();
+    }
+});
 
 // Create multiple routes for your express app:
 app.get("/", (req, res) => {
     showWarning = false;
     res.redirect("/petition/");
 });
+
 
 // app.get("/thanks", (req, res) => {
 //     if (req.session.signed === 0) {
@@ -53,26 +58,40 @@ app.get("/", (req, res) => {
 
 //  - one route for renderering the petition page with handlebars (EASY)
 app.get("/petition", (req, res) => {
-    res.render("petition", {
-        layout: "main",
-        showWarning,
-    });
+    getAllSignatures()
+        .then((data) => {
+            signersCount = data.rows.length;
+            // console.log("signersCount: ", signersCount);
+            res.render("petition", {
+                layout: "main",
+                showWarning,
+                signersCount,
+            });
+        })
+        .catch((err) => console.log(err));
 });
 
 app.post("/petition", (req, res) => {
     let fName = req.body.fname;
     let lName = req.body.lname;
-    const userSignature = "test";
+    let canvasPic = req.body.signature;
+    console.log("canvasPic: ", canvasPic);
 
-    if (fName === "" || lName === "") {
+    if (fName === "" || lName === "" || !canvasPic) { //not work for canvasPic!
         showWarning = true;
         res.redirect("/petition/");
     }
 
-    if (fName !== "" && lName !== "") {
+    if (fName !== "" && lName !== "" && canvasPic) {
         showWarning = false;
-        addSignature(fName, lName, userSignature);
-        res.redirect("/thanks/");
+        addSignature(fName, lName, canvasPic)
+            .then((data) => {
+                // console.log("user id:", data.rows[0].id);
+                req.session.signed = data.rows[0].id;
+                fNameThanks = data.rows[0].firstname;
+                res.redirect("/thanks/");
+            })
+            .catch((err) => console.log(err));
     }
     // console.log("First name: ", fName, "Last name: ", lName);
 });
@@ -86,15 +105,16 @@ app.get("/thanks", (req, res) => {
             // console.log("allData: ", allData);
             signersCount = allData.length;
             // console.log("signersCount: ", signersCount);
-            fNameThanks = allData[allData.length - 1].firstname;
-            cookieID = allData[allData.length - 1].id;
-            req.session.signed = cookieID;
-            // console.log("cookieID: ", cookieID);
+            userData = data.rows.find((el) => {
+                return el.id === req.session.signed;
+            });
+            finalImg = userData.signature;
             res.render("thanks", {
                 layout: "main",
                 signersCount,
                 allData,
                 fNameThanks,
+                finalImg,
             });
         })
         .catch((err) => console.log(err));
@@ -109,7 +129,9 @@ app.get("/signers", (req, res) => {
             res.render("signers", {
                 layout: "main",
                 allData,
+                signersCount,
             });
+            //add helper to cut lName
         })
         .catch((err) => console.log(err));
 });

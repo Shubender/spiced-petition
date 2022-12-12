@@ -34,9 +34,6 @@ let submitBtn = document.getElementById("submitBtn");
 
 submitBtn.addEventListener("click", function () {
     let dataUrl = canvas.toDataURL();
-    console.log("dataUrl: ", dataUrl);
-    const base64 = getBase64StringFromDataURL(dataUrl);
-    console.log("base64: ", base64);
-    const hiddenValue = (document.getElementById("sigHidden").value =base64);
+    const hiddenValue = (document.getElementById("sigHidden").value = dataUrl);
     console.log(hiddenValue);
 });
