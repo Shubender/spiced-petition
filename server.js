@@ -15,6 +15,7 @@ let allData;
 let userData;
 let userHash;
 let usersData;
+let passCompare;
 let finalImg;
 let fNameThanks;
 
@@ -91,23 +92,34 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     let regEmail = req.body.email;
+    console.log('user email: ', regEmail);
     let regPass = req.body.password;
-    // console.log('user data: ', regEmail, regPass);
     getAllUsers()
         .then((data) => {
-            usersData = data.rows;
-            console.log('all users: ', usersData);
-            for(let i = 0; i < usersData.length; i++ ){
-                if (usersData[i].email === regEmail) {
-                    userHash = userData[i].password;
+            // usersData = data.rows;
+            // console.log("all users: ", data.rows);
+            for (let i = 0; i < data.rows.length; i++) {              //how to stop loop when results are found?
+                // console.log("loop of emails: ", data.rows[i].email);
+                if (data.rows[i].email === regEmail) {
+                    userHash = data.rows[i].password;
+                    console.log("Hash in DB: ", userHash);
                     hashPass(regPass).then((hash) => {
-                        if (userHash === hash) {
-                            console.log(`Hi ${userData[i].first}, you can log in`);
+                        console.log("Hash from login: ", hash);
+                        compare(userHash, hash, function (err, res) {
+                            if (res) {
+                                passCompare = res;
+                            } else {
+                                console.log("Password not match!");
+                            }
+                        });
+                        if (passCompare) {
+                            console.log("Hash compare OK");
                         }
                     });
-                } else {
-                    console.log('No such account');
-                }
+                } 
+                // else if (i = data.rows.length) {
+                //     console.log("No such account");
+                // }
             }
             res.redirect("/login/");
         })
