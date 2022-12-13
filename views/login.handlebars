@@ -1,0 +1,14 @@
+<div class="registration">
+    <img src="/no-smoking-sign.png" alt="No Smoking Sign" />
+    <p class="text-petition">Please login:</p>
+    {{#if showWarning}}
+        <p class="text-petition warning">Please fill in all details</p>
+    {{/if}}
+</div>
+<form action="/login" method="POST">
+    <div>
+        <input class="input-email" type="text" name="email" placeholder="example@gmail.com">
+        <input class="input-pass" type="password" name="password" placeholder="Password"><br>
+    </div>
+     <input id="loginBtn" type="submit" value="Enter"><br>
+</form>
