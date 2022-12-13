@@ -5,31 +5,14 @@ const db = spicedPg(
     `postgres:${SQL_USER}:${SQL_PASSWORD}@localhost:5432/petition`
 );
 
+// create the following functions:
+//  - getAllSignatures - use db.query to get all signatures from table signatures
+//  - addSignature - use db.query to insert a signature to table signatures
+// Don't forget to export the functions with module.exports
+
 module.exports.getAllSignatures = () => {
     return db.query(`SELECT * FROM signatures;`);
 };
-
-// module.exports.getAllSignatures = () => {
-//     return new Promise((resolve, reject) => {
-//         const data = db.query(`SELECT * FROM signatures;`);
-//         resolve(data);
-//         reject("Error: Could not fetch data from the API");
-//     });
-// }
-
-// module.exports.getAllSignatures = () => {
-//     const data = db
-//         .query(`SELECT * FROM signatures;`)
-//         .then((data) => {
-//             const signersCount = data.rows.length;
-//             console.log("signersList: ", signersCount); // in rows property is the actual data
-
-//         })
-//         .catch((err) => {
-//             console.log("getAllSignatures: error appeared for query: ", err);
-//         });
-//         return data;
-// };
 
 module.exports.addSignature = (fName, lName, canvasPic) => {
     return db.query(
@@ -38,7 +21,13 @@ module.exports.addSignature = (fName, lName, canvasPic) => {
     );
 };
 
-// create the following functions:
-//  - getAllSignatures - use db.query to get all signatures from table signatures
-//  - addSignature - use db.query to insert a signature to table signatures
-// Don't forget to export the functions with module.exports
+module.exports.addUserData = (fName, lName, regEmail, regPass) => {
+    return db.query(
+        `INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING *;`,
+        [fName, lName, regEmail, regPass]
+    );
+};
+
+module.exports.getAllUsers = () => {
+    return db.query(`SELECT * FROM users;`);
+};

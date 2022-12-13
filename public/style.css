@@ -31,7 +31,8 @@ img {
     text-align: center;
 }
 
-.petition {
+.petition,
+.registration {
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -59,7 +60,7 @@ img {
 }
 
 canvas {
-    border: 2px dotted #CCCCCC;
+    border: 2px dotted #cccccc;
     border-radius: 15px;
     cursor: pointer;
 }
@@ -79,6 +80,8 @@ form {
 }
 
 .input-fname,
-.input-lname {
+.input-lname,
+.input-email,
+.input-pass {
     margin: 10px;
 }

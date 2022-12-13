@@ -1,14 +1,22 @@
 // require modules that you will need and set up your express app (EASY)
 const express = require("express");
 const app = express();
-const { getAllSignatures, addSignature } = require("./db.js");
+const helmet = require("helmet");
+const {
+    getAllSignatures,
+    addSignature,
+    addUserData,
+    getAllUsers,
+} = require("./db.js");
+const { hashPass, compare } = require("./encrypt");
 let showWarning = false;
 let signersCount;
 let allData;
 let userData;
+let userHash;
+let usersData;
 let finalImg;
 let fNameThanks;
-// let cookieID = 0;
 
 // const req = require("express/lib/request.js");
 
@@ -23,6 +31,7 @@ app.set("view engine", "handlebars");
 app.use(express.static("./public"));
 app.use(express.static("./public/images"));
 app.use(express.urlencoded());
+app.use(helmet());
 
 const cookieSession = require("cookie-session");
 
@@ -49,12 +58,61 @@ app.get("/", (req, res) => {
     res.redirect("/petition/");
 });
 
+app.get("/registration", (req, res) => {
+    res.render("registration", {
+        layout: "main",
+    });
+});
 
-// app.get("/thanks", (req, res) => {
-//     if (req.session.signed === 0) {
-//         res.redirect("/petition/");
-//     } 
-// });
+app.post("/registration", (req, res) => {
+    let fName = req.body.fname;
+    let lName = req.body.lname;
+    let regEmail = req.body.email;
+    let regPass = req.body.password;
+    // console.log('user data: ', fName, lName, regEmail, regPass);
+    hashPass(regPass).then((hash) => {
+        // console.log("hashed data: ", hash);
+        addUserData(fName, lName, regEmail, hash)
+            .then((data) => {
+                req.session.registered = data.rows[0].id;
+                res.redirect("/petition/");
+            })
+            // if insert fails, re-render template with an error message
+            //     - NEVER store the user's plain-text password in the database!!!
+            .catch((err) => console.log("Register error: ", err));
+    });
+});
+
+app.get("/login", (req, res) => {
+    res.render("login", {
+        layout: "main",
+    });
+});
+
+app.post("/login", (req, res) => {
+    let regEmail = req.body.email;
+    let regPass = req.body.password;
+    // console.log('user data: ', regEmail, regPass);
+    getAllUsers()
+        .then((data) => {
+            usersData = data.rows;
+            console.log('all users: ', usersData);
+            for(let i = 0; i < usersData.length; i++ ){
+                if (usersData[i].email === regEmail) {
+                    userHash = userData[i].password;
+                    hashPass(regPass).then((hash) => {
+                        if (userHash === hash) {
+                            console.log(`Hi ${userData[i].first}, you can log in`);
+                        }
+                    });
+                } else {
+                    console.log('No such account');
+                }
+            }
+            res.redirect("/login/");
+        })
+        .catch((err) => console.log("Login error: ", err));
+});
 
 //  - one route for renderering the petition page with handlebars (EASY)
 app.get("/petition", (req, res) => {
@@ -75,9 +133,10 @@ app.post("/petition", (req, res) => {
     let fName = req.body.fname;
     let lName = req.body.lname;
     let canvasPic = req.body.signature;
-    console.log("canvasPic: ", canvasPic);
+    // console.log("canvasPic: ", canvasPic);
 
-    if (fName === "" || lName === "" || !canvasPic) { //not work for canvasPic!
+    if (fName === "" || lName === "" || !canvasPic) {
+        //not work for canvasPic!
         showWarning = true;
         res.redirect("/petition/");
     }
@@ -95,7 +154,6 @@ app.post("/petition", (req, res) => {
     }
     // console.log("First name: ", fName, "Last name: ", lName);
 });
-
 
 //  - one route for rendering the thanks page with handlebars (EASY); make sure to get information about the number of signers (MEDIUM)
 app.get("/thanks", (req, res) => {
