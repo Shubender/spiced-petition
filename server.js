@@ -7,15 +7,14 @@ const {
     addSignature,
     addUserData,
     getAllUsers,
+    getUserByEmail,
 } = require("./db.js");
 const { hashPass, compare } = require("./encrypt");
 let showWarning = false;
 let signersCount;
 let allData;
 let userData;
-let userHash;
-let usersData;
-let passCompare;
+let dbHash;
 let finalImg;
 let fNameThanks;
 
@@ -87,41 +86,37 @@ app.post("/registration", (req, res) => {
 app.get("/login", (req, res) => {
     res.render("login", {
         layout: "main",
+        showWarning,
     });
+    showWarning = false;
 });
 
 app.post("/login", (req, res) => {
-    let regEmail = req.body.email;
-    console.log('user email: ', regEmail);
-    let regPass = req.body.password;
-    getAllUsers()
+    let logEmail = req.body.email;
+    // console.log("user email: ", logEmail);
+    let logPass = req.body.password;
+    getUserByEmail(logEmail)
         .then((data) => {
-            // usersData = data.rows;
-            // console.log("all users: ", data.rows);
-            for (let i = 0; i < data.rows.length; i++) {              //how to stop loop when results are found?
-                // console.log("loop of emails: ", data.rows[i].email);
-                if (data.rows[i].email === regEmail) {
-                    userHash = data.rows[i].password;
-                    console.log("Hash in DB: ", userHash);
-                    hashPass(regPass).then((hash) => {
-                        console.log("Hash from login: ", hash);
-                        compare(userHash, hash, function (err, res) {
-                            if (res) {
-                                passCompare = res;
-                            } else {
-                                console.log("Password not match!");
-                            }
-                        });
-                        if (passCompare) {
-                            console.log("Hash compare OK");
-                        }
-                    });
-                } 
-                // else if (i = data.rows.length) {
-                //     console.log("No such account");
-                // }
+            // console.log("all data: ", data);
+            if (data.rowCount === 0) {
+                // console.log("rowCount: ", data.rowCount);
+                showWarning = true;
+                res.redirect("/login/");
+                return;
             }
-            res.redirect("/login/");
+            console.log("user from DB: ", data.rows);
+            dbHash = data.rows[0].password;
+            // console.log("Hash from DB: ", dbHash);
+            compare(logPass, dbHash, function (err, result) {
+                if (result) {
+                    // console.log("compare: ", result);
+                    res.redirect("/petition/");
+                } else {
+                    // console.log("Password not match!", err);
+                    showWarning = true;
+                    res.redirect("/login/");
+                }
+            });
         })
         .catch((err) => console.log("Login error: ", err));
 });
@@ -137,6 +132,7 @@ app.get("/petition", (req, res) => {
                 showWarning,
                 signersCount,
             });
+            showWarning = false;
         })
         .catch((err) => console.log(err));
 });

@@ -2,7 +2,7 @@
     <img src="/no-smoking-sign.png" alt="No Smoking Sign" />
     <p class="text-petition">Please login:</p>
     {{#if showWarning}}
-        <p class="text-petition warning">Please fill in all details</p>
+        <p class="text-petition warning">Please fill with correct data</p>
     {{/if}}
 </div>
 <form action="/login" method="POST">
@@ -11,4 +11,5 @@
         <input class="input-pass" type="password" name="password" placeholder="Password"><br>
     </div>
      <input id="loginBtn" type="submit" value="Enter"><br>
+     <p class="text-petition">If you don't have an account, register <a href="/registration">here</a>.</p>
 </form>

@@ -31,3 +31,7 @@ module.exports.addUserData = (fName, lName, regEmail, regPass) => {
 module.exports.getAllUsers = () => {
     return db.query(`SELECT * FROM users;`);
 };
+
+module.exports.getUserByEmail = (email) => {
+    return db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+};
