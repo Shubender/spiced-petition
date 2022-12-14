@@ -10,6 +10,7 @@ const {
     getUserByEmail,
 } = require("./db.js");
 const { hashPass, compare } = require("./encrypt");
+const PORT = 8080;
 let showWarning = false;
 let signersCount;
 let allData;
@@ -202,4 +203,6 @@ app.get("/signers", (req, res) => {
         .catch((err) => console.log(err));
 });
 
-app.listen(8080, console.log("running at 8080"));
+app.listen(process.env.PORT || PORT, () => {
+    console.log(`running at ${PORT}`);
+})
