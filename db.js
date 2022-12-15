@@ -12,10 +12,14 @@ module.exports.getAllSignatures = () => {
     return db.query(`SELECT * FROM signatures;`);
 };
 
-module.exports.addSignature = (fName, lName, canvasPic) => {
+module.exports.getAllSigned = () => {
+    return db.query(`SELECT * FROM users INNER JOIN signatures ON users.id = signatures.user_id;`);
+};
+
+module.exports.addSignature = (canvasPic, userID) => {
     return db.query(
-        `INSERT INTO signatures (firstname, lastname, signature) VALUES ($1, $2, $3) RETURNING *;`,
-        [fName, lName, canvasPic]
+        `INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING *;`,
+        [canvasPic, userID]
     );
 };
 
@@ -32,4 +36,12 @@ module.exports.getAllUsers = () => {
 
 module.exports.getUserByEmail = (email) => {
     return db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+};
+
+module.exports.getUserByID = (id) => {
+    return db.query(`SELECT * FROM users WHERE id = $1`, [id]);
+};
+
+module.exports.ifUserSigned = (id) => {
+    return db.query(`SELECT * FROM signatures WHERE user_id = $1`, [id]);
 };

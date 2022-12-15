@@ -1,5 +1,6 @@
 console.log("canvas.js is active");
-
+let dataUrl;
+let hiddenValue;
 let canvas = document.getElementById("signatureCanvas");
 let context = canvas.getContext("2d");
 context.strokeStyle = "#222222";
@@ -25,15 +26,19 @@ canvas.addEventListener("mousemove", function (e) {
 });
 canvas.addEventListener("mouseup", function () {
     isDrawing = false;
+    dataUrl = canvas.toDataURL();
+    hiddenValue = (document.getElementById("sigHidden").value = dataUrl);
 });
 canvas.addEventListener("mouseleave", function () {
     isDrawing = false;
+    // dataUrl = canvas.toDataURL();
+    // hiddenValue = document.getElementById("sigHidden").value = dataUrl;
 });
 
 let submitBtn = document.getElementById("submitBtn");
 
-submitBtn.addEventListener("click", function () {
-    let dataUrl = canvas.toDataURL();
-    const hiddenValue = (document.getElementById("sigHidden").value = dataUrl);
-    console.log(hiddenValue);
-});
+// submitBtn.addEventListener("click", function () {
+//     dataUrl = canvas.toDataURL();
+//     const hiddenValue = (document.getElementById("sigHidden").value = dataUrl);
+//     console.log(hiddenValue);
+// });

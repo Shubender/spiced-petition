@@ -8,6 +8,9 @@ const {
     addUserData,
     getAllUsers,
     getUserByEmail,
+    getUserByID,
+    ifUserSigned,
+    getAllSigned,
 } = require("./db.js");
 const { hashPass, compare } = require("./encrypt");
 const PORT = 8080;
@@ -18,6 +21,9 @@ let userData;
 let dbHash;
 let finalImg;
 let fNameThanks;
+let fName;
+let lName;
+let canvasPic;
 
 // const req = require("express/lib/request.js");
 
@@ -44,10 +50,15 @@ app.use(
 );
 
 app.use((req, res, next) => {
-    if (req.url.startsWith("/petition") && req.session.signed) {
+    if (
+        (req.url.startsWith("/registration") ||
+            req.url.startsWith("/login") ||
+            req.url.startsWith("/petition")) &&
+        req.session.signid
+    ) {
         res.redirect("/thanks");
-    } else if (req.url.startsWith("/thanks") && !req.session.signed) {
-        res.redirect("/petition/");
+    } else if (req.url.startsWith("/thanks") && !req.session.signid) {
+        res.redirect("/login/");
     } else {
         next();
     }
@@ -56,7 +67,7 @@ app.use((req, res, next) => {
 // Create multiple routes for your express app:
 app.get("/", (req, res) => {
     showWarning = false;
-    res.redirect("/petition/");
+    res.redirect("/login/");
 });
 
 app.get("/registration", (req, res) => {
@@ -66,8 +77,8 @@ app.get("/registration", (req, res) => {
 });
 
 app.post("/registration", (req, res) => {
-    let fName = req.body.fname;
-    let lName = req.body.lname;
+    fName = req.body.fname;
+    lName = req.body.lname;
     let regEmail = req.body.email;
     let regPass = req.body.password;
     // console.log('user data: ', fName, lName, regEmail, regPass);
@@ -75,11 +86,9 @@ app.post("/registration", (req, res) => {
         // console.log("hashed data: ", hash);
         addUserData(fName, lName, regEmail, hash)
             .then((data) => {
-                req.session.registered = data.rows[0].id;
+                req.session.reglog = data.rows[0].id;
                 res.redirect("/petition/");
             })
-            // if insert fails, re-render template with an error message
-            //     - NEVER store the user's plain-text password in the database!!!
             .catch((err) => console.log("Register error: ", err));
     });
 });
@@ -105,13 +114,25 @@ app.post("/login", (req, res) => {
                 res.redirect("/login/");
                 return;
             }
-            console.log("user from DB: ", data.rows);
+            // console.log("user from DB: ", data.rows);
             dbHash = data.rows[0].password;
             // console.log("Hash from DB: ", dbHash);
             compare(logPass, dbHash, function (err, result) {
                 if (result) {
                     // console.log("compare: ", result);
-                    res.redirect("/petition/");
+                    req.session.reglog = data.rows[0].id;
+                    fName = data.rows[0].first;
+                    lName = data.rows[0].last;
+                    ifUserSigned(req.session.reglog).then((data) => {
+                        // console.log("have sign: ", data.rowCount);
+                        if (data.rowCount !== 0) {
+                            // console.log("user have sign!");
+                            req.session.signid = data.rows[0].id;
+                            res.redirect("/thanks/");
+                            return;
+                        }
+                        res.redirect("/petition/");
+                    });
                 } else {
                     // console.log("Password not match!", err);
                     showWarning = true;
@@ -122,7 +143,7 @@ app.post("/login", (req, res) => {
         .catch((err) => console.log("Login error: ", err));
 });
 
-//  - one route for renderering the petition page with handlebars (EASY)
+//  - one route for rendering the petition page with handlebars (EASY)
 app.get("/petition", (req, res) => {
     getAllSignatures()
         .then((data) => {
@@ -132,55 +153,54 @@ app.get("/petition", (req, res) => {
                 layout: "main",
                 showWarning,
                 signersCount,
+                fName,
+                lName,
             });
             showWarning = false;
+            // canvasPic = req.body.signature;
+            // console.log("first enter canvasPic: ", canvasPic);
         })
         .catch((err) => console.log(err));
 });
 
 app.post("/petition", (req, res) => {
-    let fName = req.body.fname;
-    let lName = req.body.lname;
-    let canvasPic = req.body.signature;
-    // console.log("canvasPic: ", canvasPic);
+    // console.log("before click canvasPic: ", canvasPic);
+    canvasPic = req.body.signature;
+    // console.log("after click canvasPic: ", canvasPic);
 
-    if (fName === "" || lName === "" || !canvasPic) {
+    if (canvasPic === "") {
         //not work for canvasPic!
         showWarning = true;
         res.redirect("/petition/");
-    }
-
-    if (fName !== "" && lName !== "" && canvasPic) {
+    } else {
         showWarning = false;
-        addSignature(fName, lName, canvasPic)
+        addSignature(canvasPic, req.session.reglog)
             .then((data) => {
                 // console.log("user id:", data.rows[0].id);
-                req.session.signed = data.rows[0].id;
-                fNameThanks = data.rows[0].firstname;
+                req.session.signid = data.rows[0].id;
+                // fNameThanks = data.rows[0].firstname;
                 res.redirect("/thanks/");
             })
             .catch((err) => console.log(err));
     }
-    // console.log("First name: ", fName, "Last name: ", lName);
 });
 
 //  - one route for rendering the thanks page with handlebars (EASY); make sure to get information about the number of signers (MEDIUM)
 app.get("/thanks", (req, res) => {
     getAllSignatures()
         .then((data) => {
-            allData = data.rows;
             // console.log("allData: ", allData);
-            signersCount = allData.length;
+            signersCount = data.rows.length;
             // console.log("signersCount: ", signersCount);
             userData = data.rows.find((el) => {
-                return el.id === req.session.signed;
+                return el.id === req.session.signid;
             });
             finalImg = userData.signature;
             res.render("thanks", {
                 layout: "main",
                 signersCount,
                 allData,
-                fNameThanks,
+                fName,
                 finalImg,
             });
         })
@@ -190,9 +210,10 @@ app.get("/thanks", (req, res) => {
 //  - one route for rendering the signers page with handlebars (EASY); make sure to get all the signature data from the db before (MEDIUM)
 //  - one route for POSTing petition data -> update db accordingly (MEDIUM)
 app.get("/signers", (req, res) => {
-    getAllSignatures()
+    getAllSigned()
         .then((data) => {
             allData = data.rows;
+            signersCount = data.rows.length;
             res.render("signers", {
                 layout: "main",
                 allData,
@@ -205,4 +226,4 @@ app.get("/signers", (req, res) => {
 
 app.listen(process.env.PORT || PORT, () => {
     console.log(`running at ${PORT}`);
-})
+});
