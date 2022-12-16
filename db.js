@@ -1,19 +1,19 @@
 require("dotenv").config();
-const { DATABASE_URL } = process.env; // add a .env file next to the db.js file with your PostgreSQL credentials
+const { DATABASE_URL } = process.env;
 const spicedPg = require("spiced-pg");
 const db = spicedPg(DATABASE_URL);
-
-// create the following functions:
-//  - getAllSignatures - use db.query to get all signatures from table signatures
-//  - addSignature - use db.query to insert a signature to table signatures
-// Don't forget to export the functions with module.exports
 
 module.exports.getAllSignatures = () => {
     return db.query(`SELECT * FROM signatures;`);
 };
 
 module.exports.getAllSigned = () => {
-    return db.query(`SELECT * FROM users INNER JOIN signatures ON users.id = signatures.user_id;`);
+    return db.query(`
+        SELECT * FROM users
+        INNER JOIN signatures
+        ON users.id = signatures.user_id
+        FULL JOIN users_profiles
+        ON users.id = users_profiles.user_id;`);
 };
 
 module.exports.addSignature = (canvasPic, userID) => {
@@ -27,6 +27,13 @@ module.exports.addUserData = (fName, lName, regEmail, regPass) => {
     return db.query(
         `INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING *;`,
         [fName, lName, regEmail, regPass]
+    );
+};
+
+module.exports.addMoreData = (age, city, page, userID) => {
+    return db.query(
+        `INSERT INTO users_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4) RETURNING *;`,
+        [age, city, page, userID]
     );
 };
 

@@ -85,3 +85,9 @@ form {
 .input-pass {
     margin: 10px;
 }
+
+.input-user-data {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}

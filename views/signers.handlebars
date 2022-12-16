@@ -2,7 +2,10 @@
     <h1>List of signers ({{signersCount}}):</h1>
     <ul class="signers-text" style="list-style: none;">
         {{#each allData}}
-            <li>{{first}} {{last}}</li>
+            <li>{{#if url}}<a href="{{url}}" target="_blank">{{first}} {{last}}</a>{{else}}{{first}} {{last}}{{/if}}
+            {{#if age}}age: {{age}}{{/if}}
+            {{#if city}}<a href="/{{city}}" target="_blank">{{city}}</a>{{/if}}
+            </li>
         {{/each}}
     </ul>
 </div>

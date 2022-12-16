@@ -11,6 +11,7 @@ const {
     getUserByID,
     ifUserSigned,
     getAllSigned,
+    addMoreData,
 } = require("./db.js");
 const { hashPass, compare } = require("./encrypt");
 const PORT = 8080;
@@ -24,6 +25,9 @@ let fNameThanks;
 let fName;
 let lName;
 let canvasPic;
+let age;
+let city;
+let page;
 
 // const req = require("express/lib/request.js");
 
@@ -57,8 +61,14 @@ app.use((req, res, next) => {
         req.session.signid
     ) {
         res.redirect("/thanks");
-    } else if (req.url.startsWith("/thanks") && !req.session.signid) {
-        res.redirect("/login/");
+    } else if (
+        (req.url.startsWith("/thanks") ||
+            req.url.startsWith("/signers") ||
+            req.url.startsWith("/petition") ||
+            req.url.startsWith("/profile")) &&
+        !req.session.reglog
+    ) {
+        res.redirect("/registration/");
     } else {
         next();
     }
@@ -67,7 +77,7 @@ app.use((req, res, next) => {
 // Create multiple routes for your express app:
 app.get("/", (req, res) => {
     showWarning = false;
-    res.redirect("/login/");
+    res.redirect("/registration/");
 });
 
 app.get("/registration", (req, res) => {
@@ -87,7 +97,7 @@ app.post("/registration", (req, res) => {
         addUserData(fName, lName, regEmail, hash)
             .then((data) => {
                 req.session.reglog = data.rows[0].id;
-                res.redirect("/petition/");
+                res.redirect("/profile/");
             })
             .catch((err) => console.log("Register error: ", err));
     });
@@ -143,7 +153,27 @@ app.post("/login", (req, res) => {
         .catch((err) => console.log("Login error: ", err));
 });
 
-//  - one route for rendering the petition page with handlebars (EASY)
+app.get("/profile", (req, res) => {
+    res.render("profile", {
+        layout: "main",
+        showWarning,
+    });
+    showWarning = false;
+});
+
+app.post("/profile", (req, res) => {
+    age = req.body.age;
+    city = req.body.city;
+    page = req.body.page;
+    // console.log("user additional data: ", age, city, page, req.session.reglog);
+    // if (age === '')
+    addMoreData(age, city, page, req.session.reglog)
+        .then((data) => {
+            res.redirect("/petition/");
+        })
+        .catch((err) => console.log("Profile error: ", err));
+});
+
 app.get("/petition", (req, res) => {
     getAllSignatures()
         .then((data) => {
@@ -185,7 +215,6 @@ app.post("/petition", (req, res) => {
     }
 });
 
-//  - one route for rendering the thanks page with handlebars (EASY); make sure to get information about the number of signers (MEDIUM)
 app.get("/thanks", (req, res) => {
     getAllSignatures()
         .then((data) => {
@@ -207,12 +236,11 @@ app.get("/thanks", (req, res) => {
         .catch((err) => console.log(err));
 });
 
-//  - one route for rendering the signers page with handlebars (EASY); make sure to get all the signature data from the db before (MEDIUM)
-//  - one route for POSTing petition data -> update db accordingly (MEDIUM)
 app.get("/signers", (req, res) => {
     getAllSigned()
         .then((data) => {
             allData = data.rows;
+            // console.log("getAllSigned: ", allData);
             signersCount = data.rows.length;
             res.render("signers", {
                 layout: "main",
