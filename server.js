@@ -12,6 +12,7 @@ const {
     ifUserSigned,
     getAllSigned,
     addMoreData,
+    getOneCity,
 } = require("./db.js");
 const { hashPass, compare } = require("./encrypt");
 const PORT = 8080;
@@ -254,4 +255,21 @@ app.get("/signers", (req, res) => {
 
 app.listen(process.env.PORT || PORT, () => {
     console.log(`running at ${PORT}`);
+});
+
+app.get("/signers/:city", (req, res) => {
+    let sortCity = req.params.city;
+    getOneCity(sortCity)
+        .then((data) => {
+            allData = data.rows;
+            // console.log("getAllSigned: ", allData);
+            // signersCount = data.rows.length;
+            res.render("cities", {
+                layout: "main",
+                allData,
+                sortCity,
+            });
+            //add helper to cut lName
+        })
+        .catch((err) => console.log(err));
 });

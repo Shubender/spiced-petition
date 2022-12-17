@@ -16,6 +16,16 @@ module.exports.getAllSigned = () => {
         ON users.id = users_profiles.user_id;`);
 };
 
+module.exports.getOneCity = (city) => {
+    return db.query(`
+        SELECT * FROM users
+        INNER JOIN signatures
+        ON users.id = signatures.user_id
+        INNER JOIN users_profiles
+        ON users.id = users_profiles.user_id
+        WHERE city = $1;`, [city]);
+};
+
 module.exports.addSignature = (canvasPic, userID) => {
     return db.query(
         `INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING *;`,
