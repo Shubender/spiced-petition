@@ -4,6 +4,12 @@
         for helping to make the world a healthier place!</h1>
     <img id="sigImg" src="{{finalImg}}" alt="Signature Image" />
     <a class="thanks-text" href="/signers">The petition was signed in total:
-        {{signersCount}}</a><br>
-    <a class="thanks-text" href="/profile">Change your data.</a>
+        {{signersCount}}</a><br />
+    <a class="thanks-text" href="/edit">Change your data</a><br>
+    <form action="/delete-sig" method="POST">
+        <input id="delBtn" type="submit" value="Delete signature" />
+    </form>
+    <form action="/delete-user" method="POST">
+        <input id="delBtn" type="submit" value="Delete user"><br>
+    </form>
 </div>

@@ -91,3 +91,14 @@ form {
     align-items: center;
     flex-direction: column;
 }
+
+#delBtn {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    font-family: "Martian Mono", monospace;
+    font-size: 16px;
+    color: #632299;
+    text-decoration: underline;
+    cursor: pointer;
+}

@@ -1,0 +1,21 @@
+<div class="registration">
+    <img src="/no-smoking-sign.png" alt="No Smoking Sign" />
+    <p class="text-petition">Edit your profile:</p>
+    {{#if showWarning}}
+        <p class="text-petition warning">Please fill with correct data</p>
+    {{/if}}
+</div>
+<form action="/edit" method="POST">
+    <div>
+        <input class="input-fname" type="text" name="fname" placeholder="First name" value={{oneUser.first}}>
+        <input class="input-lname" type="text" name="lname" placeholder="Last name" value={{oneUser.last}}><br>
+        <input class="input-email" type="text" name="email" placeholder="example@gmail.com" value={{oneUser.email}}>
+        <input class="input-pass" type="password" name="password" placeholder="New Password" value=""><br>
+        <div class="input-user-data">
+            <input type="text" name="age" placeholder="Age" value={{oneUser.age}}><br>
+            <input type="text" name="city" placeholder="City" value={{oneUser.city}}><br>
+            <input type="text" name="page" placeholder="https://www.mypage.com" value={{oneUser.url}}><br>
+        </div>
+    </div>
+     <input id="editBtn" type="submit" value="Save data"><br>
+</form>
