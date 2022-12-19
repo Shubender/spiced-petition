@@ -1,15 +1,15 @@
 <div class="registration">
     <img src="/no-smoking-sign.png" alt="No Smoking Sign" />
-    <p class="text-petition">Now please tell us little bit more about yourself. <br>(Optional)</p>
+    <p class="text-petition">Now please tell us <br>little bit more about yourself. <br>(Optional)</p>
     {{#if showWarning}}
         <p class="text-petition warning">The link must start with http(s)</p>
     {{/if}}
 </div>
 <form action="/profile" method="POST">
-    <div class="input-user-data">
+    <div class="input-profile">
         <input type="text" name="age" placeholder="Age"><br>
         <input type="text" name="city" placeholder="City"><br>
-        <input type="text" name="page" placeholder="https://www.mypage.com"><br>
+        <input type="text" name="page" placeholder="https://www.page.com"><br>
     </div>
      <input id="saveDataBtn" type="submit" value="Save Data"><br>
 </form>

@@ -1,6 +1,16 @@
-body {
-    margin: 0;
+* {
+    margin: 5px;
     box-sizing: border-box;
+    font-family: "Martian Mono", monospace;
+    color: black;
+}
+
+html { 
+  background: url(images/city-fog.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 img {
@@ -15,8 +25,20 @@ img {
 }
 
 .thanks-text {
-    width: 600px;
+    width: 520px;
     text-align: center;
+}
+
+input[type=text], input[type=password], input[type=submit] {
+  padding:10px;
+  background: transparent;
+  border: none;
+  box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+
+#delBtn {
+  box-shadow: none;
 }
 
 .signers {
@@ -52,7 +74,6 @@ img {
     font-size: 16px;
     text-align: center;
     margin-top: 0;
-    margin-bottom: 10px;
 }
 
 .warning {
@@ -60,7 +81,7 @@ img {
 }
 
 canvas {
-    border: 2px dotted #cccccc;
+    border: 2px dotted black;
     border-radius: 15px;
     cursor: pointer;
 }
@@ -75,18 +96,21 @@ form {
     display: flex;
     align-items: center;
     flex-direction: row;
-    /* padding: 10px; */
-    /* margin: 10px; */
 }
 
-.input-fname,
-.input-lname,
-.input-email,
-.input-pass {
-    margin: 10px;
+.input-personal {
+    margin: 20px 0px;
 }
 
 .input-user-data {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    /* padding: 10px; */
+}
+
+.input-profile {
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -98,7 +122,6 @@ form {
     padding: 0 !important;
     font-family: "Martian Mono", monospace;
     font-size: 16px;
-    color: #632299;
     text-decoration: underline;
     cursor: pointer;
 }

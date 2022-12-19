@@ -3,7 +3,7 @@ let dataUrl;
 let hiddenValue;
 let canvas = document.getElementById("signatureCanvas");
 let context = canvas.getContext("2d");
-context.strokeStyle = "#222222";
+context.strokeStyle = "#880808";
 context.lineWidth = 1;
 
 let isDrawing = false;

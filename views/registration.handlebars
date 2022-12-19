@@ -1,4 +1,5 @@
 <div class="registration">
+    <p class="title-petition">No smoking in public places</p>
     <img src="/no-smoking-sign.png" alt="No Smoking Sign" />
     <p class="text-petition">Join our campaign today!</p>
     {{#if showWarning}}
@@ -7,10 +8,10 @@
 </div>
 <form action="/registration" method="POST">
     <div>
-        <input class="input-fname" type="text" name="fname" placeholder="First name">
-        <input class="input-lname" type="text" name="lname" placeholder="Last name"><br>
-        <input class="input-email" type="text" name="email" placeholder="example@gmail.com">
-        <input class="input-pass" type="password" name="password" placeholder="Password"><br>
+        <input class="input" type="text" name="fname" placeholder="First name">
+        <input class="input" type="text" name="lname" placeholder="Last name"><br>
+        <input class="input" type="text" name="email" placeholder="example@gmail.com">
+        <input class="input" type="password" name="password" placeholder="Password"><br>
     </div>
      <input id="registerBtn" type="submit" value="Sign Up"><br>
     <p class="text-petition">If you already a member, log in <a href="/login">here</a>.</p>
