@@ -214,13 +214,19 @@ app.get("/edit", (req, res) => {
 });
 
 app.post("/edit", (req, res) => {
-    updateUser(
-        req.body.fname,
-        req.body.lname,
-        req.body.email,
-        req.session.reglog
-    );
-
+    if (req.body.fname === '' || req.body.lname === '' || req.body.email === '') {
+        // console.log("can't be empty!");
+        showWarning = true;
+        res.redirect("/edit/");
+        return;
+    } else {
+        updateUser(
+            req.body.fname,
+            req.body.lname,
+            req.body.email,
+            req.session.reglog
+        );
+    }
     //change password
     if (req.body.password !== "") {
         // console.log("Password changed");
