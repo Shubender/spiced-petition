@@ -61,7 +61,7 @@ app.use(
 );
 
 // app.use((req, res, next) => {
-//     if (!req.session.signid && req.session.reglog) {
+//     if (!req.session.signId && req.session.userId) {
 //         res.redirect("/petition/");
 //         return;
 //     }
@@ -72,7 +72,7 @@ app.use((req, res, next) => {
         (req.url.startsWith("/registration") ||
             req.url.startsWith("/login") ||
             req.url.startsWith("/petition")) &&
-        req.session.signid
+        req.session.signId
     ) {
         res.redirect("/thanks"); // signature true
     } else if (
@@ -81,7 +81,7 @@ app.use((req, res, next) => {
             req.url.startsWith("/petition") ||
             req.url.startsWith("/profile") ||
             req.url.startsWith("/edit")) &&
-        !req.session.reglog
+        !req.session.userId
     ) {
         res.redirect("/registration/"); // not logged
     } else {
@@ -120,7 +120,7 @@ app.post("/registration", (req, res) => {
         // console.log("hashed data: ", hash);
         addUserData(fName, lName, regEmail, hash)
             .then((data) => {
-                req.session.reglog = data.rows[0].id;
+                req.session.userId = data.rows[0].id;
                 res.redirect("/profile/");
             })
             .catch((err) => console.log("Register error: ", err));
@@ -154,14 +154,14 @@ app.post("/login", (req, res) => {
             compare(logPass, dbHash, function (err, result) {
                 if (result) {
                     // console.log("compare: ", result);
-                    req.session.reglog = data.rows[0].id;
+                    req.session.userId = data.rows[0].id;
                     fName = data.rows[0].first;
                     lName = data.rows[0].last;
-                    ifUserSigned(req.session.reglog).then((data) => {
+                    ifUserSigned(req.session.userId).then((data) => {
                         // console.log("have sign: ", data.rowCount);
                         if (data.rowCount !== 0) {
                             // console.log("user have sign!");
-                            req.session.signid = data.rows[0].id;
+                            req.session.signId = data.rows[0].id;
                             res.redirect("/thanks/");
                             return;
                         }
@@ -189,9 +189,9 @@ app.post("/profile", (req, res) => {
     age = req.body.age;
     city = req.body.city;
     page = req.body.page;
-    // console.log("user additional data: ", age, city, page, req.session.reglog);
+    // console.log("user additional data: ", age, city, page, req.session.userId);
 
-    addMoreData(age, city, page, req.session.reglog)
+    addMoreData(age, city, page, req.session.userId)
         .then((data) => {
             res.redirect("/petition/");
         })
@@ -199,7 +199,7 @@ app.post("/profile", (req, res) => {
 });
 
 app.get("/edit", (req, res) => {
-    getUserById(req.session.reglog)
+    getUserById(req.session.userId)
         .then((data) => {
             oneUser = data.rows[0];
             // console.log("oneUser: ", oneUser);
@@ -224,7 +224,7 @@ app.post("/edit", (req, res) => {
             req.body.fname,
             req.body.lname,
             req.body.email,
-            req.session.reglog
+            req.session.userId
         );
     }
     //change password
@@ -242,7 +242,7 @@ app.post("/edit", (req, res) => {
                 hashPass(req.body.password)
                     .then((hash) => {
                         console.log("hashed data: ", hash);
-                        updatePass(hash, req.session.reglog);
+                        updatePass(hash, req.session.userId);
                     })
                     .catch((err) => console.log("Update pass error: ", err));
             }
@@ -253,7 +253,7 @@ app.post("/edit", (req, res) => {
         req.body.age,
         req.body.city,
         req.body.page,
-        req.session.reglog
+        req.session.userId
     );
 
     res.redirect("/thanks/");
@@ -289,10 +289,10 @@ app.post("/petition", (req, res) => {
         res.redirect("/petition/");
     } else {
         showWarning = false;
-        addSignature(canvasPic, req.session.reglog)
+        addSignature(canvasPic, req.session.userId)
             .then((data) => {
                 // console.log("user id:", data.rows[0].id);
-                req.session.signid = data.rows[0].id;
+                req.session.signId = data.rows[0].id;
                 res.redirect("/thanks/");
             })
             .catch((err) => console.log(err));
@@ -306,7 +306,7 @@ app.get("/thanks", (req, res) => {
             signersCount = data.rows.length;
             // console.log("signersCount: ", signersCount);
             userData = data.rows.find((el) => {
-                return el.id === req.session.signid;
+                return el.id === req.session.signId;
             });
             finalImg = userData.signature;
             res.render("thanks", {
@@ -336,6 +336,10 @@ app.get("/signers", (req, res) => {
         .catch((err) => console.log(err));
 });
 
+app.post("/signers", (req, res) => {
+    res.redirect("/thanks/");
+});
+
 app.get("/signers/:city", (req, res) => {
     let sortCity = req.params.city;
     getOneCity(sortCity)
@@ -354,17 +358,17 @@ app.get("/signers/:city", (req, res) => {
 });
 
 app.post("/delete-sig", (req, res) => {
-    // console.log("delete-sig shoot:", req.session.reglog);
-    deleteSignature(req.session.reglog);
-    req.session.signid = false;
+    // console.log("delete-sig shoot:", req.session.userId);
+    deleteSignature(req.session.userId);
+    req.session.signId = false;
     res.redirect("/petition/");
 });
 
 app.post("/delete-user", (req, res) => {
-    console.log("delete-user shoot:", req.session.reglog);
-    deleteUser(req.session.reglog);
-    req.session.signid = false;
-    req.session.reglog = false;
+    console.log("delete-user shoot:", req.session.userId);
+    deleteUser(req.session.userId);
+    req.session.signId = false;
+    req.session.userId = false;
     res.redirect("/registration/");
 });
 
