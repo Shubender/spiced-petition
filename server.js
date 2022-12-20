@@ -202,7 +202,7 @@ app.post("/profile", (req, res) => {
         res.redirect("/profile/");
         return;
     }
-    addMoreData(age, city, page, req.session.userId)
+    addMoreData(age, city, page, req.session.userId) // here is bug if click back on page and send 1 more time
         .then((data) => {
             res.redirect("/petition/");
         })
@@ -344,6 +344,12 @@ app.get("/thanks", (req, res) => {
             });
         })
         .catch((err) => console.log(err));
+});
+
+app.post("/log-out", (req, res) => {
+    req.session.signId = false;
+    req.session.userId = false;
+    res.redirect("/login/");
 });
 
 app.get("/signers", (req, res) => {
