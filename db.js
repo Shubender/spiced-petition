@@ -94,8 +94,8 @@ module.exports.deleteUser = (userID) => {
     return db
         .query(
             `
-            DELETE FROM users
-            WHERE id = $1`,
+            DELETE FROM users_profiles
+            WHERE user_id = $1`,
             [userID]
         )
         .then(() => {
@@ -109,8 +109,8 @@ module.exports.deleteUser = (userID) => {
         .then(() => {
             db.query(
                 `
-                DELETE FROM users_profiles
-                WHERE user_id = $1;`,
+                DELETE FROM users
+                WHERE id = $1;`,
                 [userID]
             );
         })

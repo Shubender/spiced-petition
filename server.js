@@ -365,7 +365,7 @@ app.post("/delete-sig", (req, res) => {
 });
 
 app.post("/delete-user", (req, res) => {
-    console.log("delete-user shoot:", req.session.userId);
+    // console.log("delete-user:", req.session.userId);
     deleteUser(req.session.userId);
     req.session.signId = false;
     req.session.userId = false;
