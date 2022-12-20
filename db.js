@@ -130,16 +130,8 @@ module.exports.addMoreData = (age, city, page, userID) => {
     );
 };
 
-module.exports.getAllUsers = () => {
-    return db.query(`SELECT * FROM users;`);
-};
-
 module.exports.getUserByEmail = (email) => {
     return db.query(`SELECT * FROM users WHERE email = $1`, [email]);
-};
-
-module.exports.getUserByID = (id) => {
-    return db.query(`SELECT * FROM users WHERE id = $1`, [id]);
 };
 
 module.exports.ifUserSigned = (id) => {

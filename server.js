@@ -6,9 +6,7 @@ const {
     getAllSignatures,
     addSignature,
     addUserData,
-    getAllUsers,
     getUserByEmail,
-    getUserByID,
     ifUserSigned,
     getAllSigned,
     addMoreData,
@@ -63,16 +61,17 @@ app.use(
 
 // app.use((req, res, next) => {
 //     if (!req.session.signId && req.session.userId) {
-//         res.redirect("/petition/");
-//         return;
+//         return res.redirect("/petition/");
 //     }
+//     next();
 // });
 
 app.use((req, res, next) => {
     if (
         (req.url.startsWith("/registration") ||
             req.url.startsWith("/login") ||
-            req.url.startsWith("/petition")) &&
+            req.url.startsWith("/petition") ||
+            req.url.startsWith("/profile")) &&
         req.session.signId
     ) {
         res.redirect("/thanks"); // signature true
@@ -86,11 +85,19 @@ app.use((req, res, next) => {
     ) {
         res.redirect("/registration/"); // not logged
     } else {
-        next();
+        // res.redirect("/petition/"); // logged, signature false
+        if (
+            !req.session.signId &&
+            req.session.userId &&
+            !req.url.startsWith("/petition") &&
+            !req.url.startsWith("/profile")
+        ) {
+            return res.redirect("/petition/");
+        }
     }
+    next();
 });
 
-// Create multiple routes for your express app:
 app.get("/", (req, res) => {
     showWarning = false;
     res.redirect("/registration/");
