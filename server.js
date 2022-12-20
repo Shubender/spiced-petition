@@ -46,7 +46,7 @@ app.set("view engine", "handlebars");
 //  - express.static for static files (EASY)
 //  - express.urlencoded for ready the body of POST requests (EASY)
 app.use(express.static("./public"));
-app.use(express.static("./public/images"));
+// app.use(express.static("./public/images"));
 app.use(express.urlencoded());
 app.use(helmet());
 
