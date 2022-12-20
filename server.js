@@ -23,6 +23,7 @@ const {
 const { hashPass, compare } = require("./encrypt");
 const PORT = 8080;
 let showWarning = false;
+let linkWarning = false;
 let signersCount;
 let allData;
 let userData;
@@ -180,9 +181,9 @@ app.post("/login", (req, res) => {
 app.get("/profile", (req, res) => {
     res.render("profile", {
         layout: "main",
-        showWarning,
+        linkWarning,
     });
-    showWarning = false;
+    linkWarning = false;
 });
 
 app.post("/profile", (req, res) => {
@@ -190,7 +191,17 @@ app.post("/profile", (req, res) => {
     city = req.body.city;
     page = req.body.page;
     // console.log("user additional data: ", age, city, page, req.session.userId);
-
+    // console.log('user page: ', page);
+    if (
+        !page.startsWith("http://") &&
+        !page.startsWith("https://") &&
+        page !== ""
+    ) {
+        // console.log('page not OK');
+        linkWarning = true;
+        res.redirect("/profile/");
+        return;
+    }
     addMoreData(age, city, page, req.session.userId)
         .then((data) => {
             res.redirect("/petition/");
@@ -206,15 +217,21 @@ app.get("/edit", (req, res) => {
             res.render("edit", {
                 layout: "main",
                 showWarning,
+                linkWarning,
                 oneUser,
             });
             showWarning = false;
+            linkWarning = false;
         })
         .catch((err) => console.log("Edit error: ", err));
 });
 
 app.post("/edit", (req, res) => {
-    if (req.body.fname === '' || req.body.lname === '' || req.body.email === '') {
+    if (
+        req.body.fname === "" ||
+        req.body.lname === "" ||
+        req.body.email === ""
+    ) {
         // console.log("can't be empty!");
         showWarning = true;
         res.redirect("/edit/");
@@ -248,15 +265,24 @@ app.post("/edit", (req, res) => {
             }
         });
     }
-
-    updateUserProfile(
-        req.body.age,
-        req.body.city,
-        req.body.page,
-        req.session.userId
-    );
-
-    res.redirect("/thanks/");
+    if (
+        !req.body.page.startsWith("http://") &&
+        !req.body.page.startsWith("https://") &&
+        req.body.page !== ""
+    ) {
+        console.log("page not OK");
+        linkWarning = true;
+        res.redirect("/edit/");
+        return;
+    } else {
+        updateUserProfile(
+            req.body.age,
+            req.body.city,
+            req.body.page,
+            req.session.userId
+        );
+        res.redirect("/thanks/");
+    }
 });
 
 app.get("/petition", (req, res) => {

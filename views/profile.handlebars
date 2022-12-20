@@ -1,8 +1,8 @@
 <div class="registration">
     <img src="/no-smoking-sign.png" alt="No Smoking Sign" />
     <p class="text-petition">Now please tell us <br>little bit more about yourself. <br>(Optional)</p>
-    {{#if showWarning}}
-        <p class="text-petition warning">The link must start with http(s)</p>
+    {{#if linkWarning}}
+        <p class="text-petition warning">The link must start with http(s)://</p>
     {{/if}}
 </div>
 <form action="/profile" method="POST">

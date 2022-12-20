@@ -4,6 +4,9 @@
     {{#if showWarning}}
         <p class="text-petition warning">Name, last name, email fields can't be empty</p>
     {{/if}}
+    {{#if linkWarning}}
+        <p class="text-petition warning">The link must start with http(s)://</p>
+    {{/if}}
 </div>
 <form action="/edit" method="POST">
     <div>
@@ -23,7 +26,7 @@
             <div class="column">
               <input class="input" type="text" name="age" placeholder="Age" value={{oneUser.age}}><br>
               <input class="input" type="text" name="city" placeholder="City" value={{oneUser.city}}><br>
-              <input class="input" type="text" name="page" placeholder="https://www.mypage.com" value={{oneUser.url}}><br>
+              <input class="input" type="text" name="page" placeholder="https://www.page.com" value={{oneUser.url}}><br>
             </div>
         </div>
     </div>
